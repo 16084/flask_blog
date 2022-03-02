@@ -1,6 +1,11 @@
+# blog app that allows users to register and post blogs 
+
 from flask import Flask, render_template, url_for
+from forms import RegistrationForm, LoginForm
 
 app = Flask(__name__)
+
+app.config['SECRET_KEY'] = 'a469bb9b2a9e4dabd2b03e1fa2c816e8'
 
 #list of post dictionaries 
 
@@ -41,6 +46,18 @@ def home():
 @app.route("/about")
 def about():
     return render_template('about.html', title='About')
+
+# route for registration page
+@app.route("/register")
+def register():
+    form = RegistrationForm()
+    return render_template('register.html', title='Register', form=form)
+
+# route for login page
+@app.route("/login")
+def login():
+    form = LoginForm()
+    return render_template('login.html', title='Log In', form=form)
 
 # allows main app to run the web server
 if __name__=='__main__':
