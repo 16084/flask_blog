@@ -1,5 +1,5 @@
 # blog app that allows users to register and post blogs 
-from datatime import datetime
+from datetime import datetime
 from flask import Flask, render_template, url_for, flash, redirect
 from flask_sqlalchemy import SQLAlchemy
 from forms import RegistrationForm, LoginForm
@@ -17,9 +17,21 @@ class User(db.Model):
     username = db.Column(db.String(120), unique=True, nullable=False)
     image_file = db.Column(db.String(20), nullable=False, default='default.jpg')
     password = db.Column(db.String(60), nullbale=False)
+    posts = db.relationship('Post', backref='author', lazy=True)
     
     def __repr__(self):
         return f"User('{self.username}', {self.email}','{self.image_file}')"
+    
+    
+class Post(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    date_posted = db.Column(db.DataTime, nullable=False, default=datetime.utcnow)
+    content = db.Column(db.Text, nullable=False)
+    user_id = db.Column(db.Interger, db.Foreignkey('user.id'), nullable=False)
+    
+    def __repr__(self):
+        return f"User('{self.title}', {self.date_posted}')"
 
 #list of post dictionaries 
 
