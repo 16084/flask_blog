@@ -7,32 +7,6 @@ from main_app.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostF
 from main_app.models import User, Post 
 from flask_login import login_user, current_user, logout_user, login_required
 
-#list of post dictionaries 
-
-posts = [
-    
-    {
-        'author': "Diane Dumbong",
-        'title': 'Blog Post 1',
-        'content':'First post content',
-        'date_posted':'February 22, 2022'       
-    },
-    
-    {
-        'author': 'Jane Doe',
-        'title':'Blog Post 2',
-        'content':'Second post content',
-        'date_posted':'February 24, 2022'
-    },
-    
-    {
-        'author': 'Bob Doe',
-        'title':'Blog Post 3',
-        'content':'Third post content',
-        'date_posted':'February 26, 2022'
-    }
-        
-]
 
 #routes
 
@@ -40,6 +14,7 @@ posts = [
 @app.route("/") #route to main page
 @app.route("/home") #route to home page
 def home():
+    posts = Post.query.all()
     return render_template('home.html', posts=posts) #call to render the home page template 
 
 # route for about page
@@ -102,8 +77,8 @@ def account():
     if form.validate_on_submit():
         if form.picture.data:
             picture_file = save_picture(form.picture.data)
-            current_user.image_file = picture_file
-        
+            current_user.image_file = picture_file  
+        current_user.username = form.username.data
         current_user.email = form.email.data
         db.session.commit()
         flash('Your account has been updated','success')
@@ -120,6 +95,9 @@ def account():
 def new_post():
     form = PostForm()
     if form.validate_on_submit():
+        post = Post(title=form.title.data, content=form.content.data, author=current_user)
+        db.session.add(post)
+        db.session.commit()
         flash('Your post has been created','success')
         return redirect(url_for('home'))
     return render_template('create_post.html', title='New Post', form=form)
